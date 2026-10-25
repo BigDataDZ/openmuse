@@ -341,6 +341,7 @@ function mapMessage(message: z.infer<typeof messageSchema>): Mail {
   const time = message.internalDate
     ? Number(message.internalDate)
     : Date.parse(metadata.get("date") ?? "");
+  const date = new Date(time);
   const body = plain.length
     ? plain.join("\n\n")
     : html.length
@@ -355,7 +356,7 @@ function mapMessage(message: z.infer<typeof messageSchema>): Mail {
     to: addresses(metadata.get("to") ?? ""),
     subject: decodeHeader(metadata.get("subject") ?? "(No subject)"),
     body,
-    date: Number.isFinite(time) ? new Date(time).toISOString() : "",
+    date: Number.isFinite(date.getTime()) ? date.toISOString() : "",
     unread: message.labelIds.includes("UNREAD"),
     label: message.labelIds.includes("INBOX")
       ? "Inbox"
