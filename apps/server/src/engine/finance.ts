@@ -20,21 +20,17 @@ export function analyzeSpending(csv: string) {
         quoted = !quoted;
         if (!quoted) {
           const next = csv[i + 1];
-          if (
-            next !== undefined &&
-            next !== "," &&
-            next !== "\n" &&
-            !(next === "\r" && (csv[i + 2] === "\n" || csv[i + 2] === undefined))
-          )
+          if (next !== undefined && next !== "," && next !== "\n" && next !== "\r")
             throw new Error("Invalid quoted CSV field");
         }
       }
-    } else if (!quoted && (c === "," || c === "\n" || c === undefined)) {
-      row.push(cell.replace(/\r$/, ""));
+    } else if (!quoted && (c === "," || c === "\r" || c === "\n" || c === undefined)) {
+      row.push(cell);
       cell = "";
       if (c !== ",") {
         if (row.some((v) => v.trim())) rows.push(row);
         row = [];
+        if (c === "\r" && csv[i + 1] === "\n") i++;
       }
     } else if (c !== undefined) cell += c;
   }
